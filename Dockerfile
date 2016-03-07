@@ -8,6 +8,7 @@ RUN apt-get install -y cmake \
                        checkinstall \
                        curl \
                        make \
+                       ninja-build \
                        gcc \
                        clang \
                        git \
@@ -51,12 +52,13 @@ WORKDIR $FW4SPL_HOME/Build
 
 # Configure project
 RUN cmake $FW4SPL_HOME/Src/fw4spl \
+          -G Ninja
           -DCMAKE_INSTALL_PREFIX=$FW4SPL_HOME/Install \
           -DCMAKE_BUILD_TYPE=$FW4SPL_BUILDTYPE \
           -DBUILD_TESTS=OFF \
           -DUSE_SYSTEM_LIB=ON \
           -DBUILD_DOCUMENTATION=OFF
 
-RUN make VRRender
+RUN ninja VRRender
 
 CMD ["/bin/bash"]
