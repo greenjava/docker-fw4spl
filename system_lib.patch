@@ -1,0 +1,641 @@
+diff --git a/CMake/modules/FindCAMP.cmake b/CMake/modules/FindCAMP.cmake
+new file mode 100644
+index 0000000..3b4842e
+--- /dev/null
++++ b/CMake/modules/FindCAMP.cmake
+@@ -0,0 +1,48 @@
++# Locate CAMP library
++# This module defines
++#  CAMP_FOUND, if false, do not try to link to CAMP
++#  CAMP_LIBRARIES
++#  CAMP_INCLUDE_DIR, where to find camp/version.hpp
++
++find_path(CAMP_INCLUDE_DIR camp/version.hpp
++  HINTS
++  $ENV{CAMP_DIR}
++  PATH_SUFFIXES include
++  PATHS
++  [HKEY_LOCAL_MACHINE\\SOFTWARE\\Tegesoft\\CAMP]
++  ~/Library/Frameworks
++  /Library/Frameworks
++  /usr/local
++  /usr
++  /sw # Fink
++  /opt/local # DarwinPorts
++  /opt/csw # Blastwave
++  /opt
++)
++
++find_library(CAMP_LIBRARY 
++  NAMES camp campd
++  HINTS
++  $ENV{CAMP_DIR}
++  PATH_SUFFIXES lib64 lib
++  PATHS
++  [HKEY_LOCAL_MACHINE\\SOFTWARE\\Tegesoft\\CAMP]
++  ~/Library/Frameworks
++  /Library/Frameworks
++  /usr/local
++  /usr
++  /sw
++  /opt/local
++  /opt/csw
++  /opt
++)
++
++set(CAMP_LIBRARIES "${CAMP_LIBRARY}" CACHE STRING "CAMP Libraries")
++
++include(FindPackageHandleStandardArgs)
++# handle the QUIETLY and REQUIRED arguments and set CAMP_FOUND to TRUE if 
++# all listed variables are TRUE
++FIND_PACKAGE_HANDLE_STANDARD_ARGS(CAMP DEFAULT_MSG CAMP_LIBRARIES CAMP_INCLUDE_DIR)
++
++MARK_AS_ADVANCED(CAMP_INCLUDE_DIR CAMP_LIBRARIES CAMP_LIBRARY)
++
+diff --git a/CMake/modules/FindCppUnit.cmake b/CMake/modules/FindCppUnit.cmake
+new file mode 100644
+index 0000000..95d0f1d
+--- /dev/null
++++ b/CMake/modules/FindCppUnit.cmake
+@@ -0,0 +1,46 @@
++#
++# Find the CppUnit includes and library
++#
++# This module defines
++# CPPUNIT_INCLUDE_DIR, where to find tiff.h, etc.
++# CPPUNIT_LIBRARIES, the libraries to link against to use CppUnit.
++# CPPUNIT_FOUND, If false, do not try to use CppUnit.
++
++# also defined, but not for general use are
++# CPPUNIT_LIBRARY, where to find the CppUnit library.
++# CPPUNIT_DEBUG_LIBRARY, where to find the CppUnit library in debug mode.
++
++find_path(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
++  /usr/local/include
++  /usr/include
++)
++
++# With Win32, important to have both
++if(WIN32)
++  find_library(CPPUNIT_LIBRARY cppunit
++               ${CPPUNIT_INCLUDE_DIR}/../lib
++               /usr/local/lib
++               /usr/lib)
++  find_library(CPPUNIT_DEBUG_LIBRARY cppunitd
++               ${CPPUNIT_INCLUDE_DIR}/../lib
++               /usr/local/lib
++               /usr/lib)
++else(WIN32)
++  # On unix system, debug and release have the same name
++  find_library(CPPUNIT_LIBRARY cppunit
++               ${CPPUNIT_INCLUDE_DIR}/../lib
++               /usr/local/lib
++               /usr/lib)
++  find_library(CPPUNIT_DEBUG_LIBRARY cppunit
++               ${CPPUNIT_INCLUDE_DIR}/../lib
++               /usr/local/lib
++               /usr/lib)
++endif(WIN32)
++
++if(CPPUNIT_INCLUDE_DIR)
++  if(CPPUNIT_LIBRARY)
++    set(CPPUNIT_FOUND "YES")
++    set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
++    set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY} ${CMAKE_DL_LIBS})
++  endif(CPPUNIT_LIBRARY)
++endif(CPPUNIT_INCLUDE_DIR)
+diff --git a/CMake/modules/FindCryptoPP.cmake b/CMake/modules/FindCryptoPP.cmake
+new file mode 100644
+index 0000000..4a399bb
+--- /dev/null
++++ b/CMake/modules/FindCryptoPP.cmake
+@@ -0,0 +1,65 @@
++# Locate CryptoPP library
++# This module defines
++#  CryptoPP_FOUND, if false, do not try to link to CryptoPP
++#  CryptoPP_LIBRARIES
++#  CryptoPP_INCLUDE_DIR, where to find cryptopp/config.h
++
++
++    find_path(CryptoPP_INCLUDE_DIR cryptopp/config.h
++        HINTS
++        PATH_SUFFIXES include
++        PATHS
++        ~/Library/Frameworks
++        /Library/Frameworks
++        /usr/local
++        /usr
++        /sw # Fink
++        /opt/local # DarwinPorts
++        /opt/csw # Blastwave
++        /opt
++        )
++
++    find_library(CryptoPP_LIBRARY 
++        NAMES cryptopp 
++        HINTS
++        PATH_SUFFIXES lib
++        PATHS
++        ~/Library/Frameworks
++        /Library/Frameworks
++        /usr/local
++        /usr
++        /sw
++        /opt/local
++        /opt/csw
++        /opt
++        )
++
++if(WIN32)
++    find_library(CryptoPP_LIB
++        NAMES cryptlib 
++        HINTS
++        PATH_SUFFIXES lib
++        PATHS
++        ~/Library/Frameworks
++        /Library/Frameworks
++        /usr/local
++        /usr
++        /sw
++        /opt/local
++        /opt/csw
++        /opt
++        )
++    set(CryptoPP_LIBRARIES "${CryptoPP_LIB};${CryptoPP_LIBRARY}" CACHE LIST "CryptoPP Libraries")
++else()
++    set(CryptoPP_LIBRARIES "${CryptoPP_LIBRARY}" CACHE LIST "CryptoPP Libraries")
++endif()
++
++
++
++include(FindPackageHandleStandardArgs)
++# handle the QUIETLY and REQUIRED arguments and set CryptoPP_FOUND to TRUE if 
++# all listed variables are TRUE
++FIND_PACKAGE_HANDLE_STANDARD_ARGS(CryptoPP DEFAULT_MSG CryptoPP_LIBRARIES CryptoPP_INCLUDE_DIR)
++
++MARK_AS_ADVANCED(CryptoPP_INCLUDE_DIR CryptoPP_LIBRARIES CryptoPP_LIBRARY)
++
+diff --git a/CMake/modules/FindGLM.cmake b/CMake/modules/FindGLM.cmake
+new file mode 100644
+index 0000000..2d90092
+--- /dev/null
++++ b/CMake/modules/FindGLM.cmake
+@@ -0,0 +1,63 @@
++# FindGLM - attempts to locate the glm matrix/vector library.
++#
++# This module defines the following variables (on success):
++#   GLM_INCLUDE_DIRS  - where to find glm/glm.hpp
++#   GLM_FOUND         - if the library was successfully located
++#
++# It is trying a few standard installation locations, but can be customized
++# with the following variables:
++#   GLM_ROOT_DIR      - root directory of a glm installation
++#                       Headers are expected to be found in either:
++#                       <GLM_ROOT_DIR>/glm/glm.hpp           OR
++#                       <GLM_ROOT_DIR>/include/glm/glm.hpp
++#                       This variable can either be a cmake or environment
++#                       variable. Note however that changing the value
++#                       of the environment varible will NOT result in
++#                       re-running the header search and therefore NOT
++#                       adjust the variables set by this module.
++
++#=============================================================================
++# Copyright 2012 Carsten Neumann
++#
++# Distributed under the OSI-approved BSD License (the "License");
++# see accompanying file Copyright.txt for details.
++#
++# This software is distributed WITHOUT ANY WARRANTY; without even the
++# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++# See the License for more information.
++#=============================================================================
++# (To distribute this file outside of CMake, substitute the full
++#  License text for the above reference.)
++
++# default search dirs
++SET(_glm_HEADER_SEARCH_DIRS
++    "/usr/include"
++    "/usr/local/include")
++
++# check environment variable
++SET(_glm_ENV_ROOT_DIR "$ENV{GLM_ROOT_DIR}")
++
++IF(NOT GLM_ROOT_DIR AND _glm_ENV_ROOT_DIR)
++    SET(GLM_ROOT_DIR "${_glm_ENV_ROOT_DIR}")
++ENDIF(NOT GLM_ROOT_DIR AND _glm_ENV_ROOT_DIR)
++
++# put user specified location at beginning of search
++IF(GLM_ROOT_DIR)
++    SET(_glm_HEADER_SEARCH_DIRS "${GLM_ROOT_DIR}"
++                                "${GLM_ROOT_DIR}/include"
++                                 ${_glm_HEADER_SEARCH_DIRS})
++ENDIF(GLM_ROOT_DIR)
++
++# locate header
++FIND_PATH(GLM_INCLUDE_DIR "glm/glm.hpp"
++    PATHS ${_glm_HEADER_SEARCH_DIRS})
++
++INCLUDE(FindPackageHandleStandardArgs)
++FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLM DEFAULT_MSG
++    GLM_INCLUDE_DIR)
++
++IF(GLM_FOUND)
++    SET(GLM_INCLUDE_DIRS "${GLM_INCLUDE_DIR}")
++
++    MESSAGE(STATUS "GLM_INCLUDE_DIR = ${GLM_INCLUDE_DIR}")
++ENDIF(GLM_FOUND)
+diff --git a/CMake/modules/FindIconv.cmake b/CMake/modules/FindIconv.cmake
+new file mode 100644
+index 0000000..940ab89
+--- /dev/null
++++ b/CMake/modules/FindIconv.cmake
+@@ -0,0 +1,10 @@
++# ICONV_FOUND - system has Iconv 
++# ICONV_INCLUDE_DIR - the Iconv include directory 
++# ICONV_LIBRARIES - Link these to use Iconv 
++
++find_path(ICONV_INCLUDE_DIR iconv.h) 
++find_library(ICONV_LIBRARIES NAMES iconv libiconv libiconv-2 c)
++ 
++if(ICONV_INCLUDE_DIR AND ICONV_LIBRARIES) 
++    set(ICONV_FOUND TRUE) 
++endif(ICONV_INCLUDE_DIR AND ICONV_LIBRARIES) 
+diff --git a/CMake/modules/FindTetgen.cmake b/CMake/modules/FindTetgen.cmake
+new file mode 100644
+index 0000000..21619d4
+--- /dev/null
++++ b/CMake/modules/FindTetgen.cmake
+@@ -0,0 +1,48 @@
++# Locate Tetgen library
++# This module defines
++#  TETGEN_FOUND, if false, do not try to link to TETGEN
++#  TETGEN_LIBRARIES
++#  TETGEN_INCLUDE_DIR, where to find tetgen.h
++
++find_path(TETGEN_INCLUDE_DIR tetgen.h
++  HINTS
++  $ENV{TETGEN_DIR}
++  PATH_SUFFIXES include include/tetgen
++  PATHS
++  ~/Library/Frameworks
++  /Library/Frameworks
++  /usr/local
++  /usr
++  /sw # Fink
++  /opt/local # DarwinPorts
++  /opt/csw # Blastwave
++  /opt
++)
++
++find_library(TETGEN_LIBRARY 
++  NAMES tetlib
++  HINTS
++  $ENV{TETGEN_DIR}
++  PATH_SUFFIXES lib64 lib
++  PATHS
++  ~/Library/Frameworks
++  /Library/Frameworks
++  /usr/local
++  /usr
++  /sw
++  /opt/local
++  /opt/csw
++  /opt
++)
++
++set(TETGEN_LIBRARIES "${TETGEN_LIBRARY}" CACHE STRING "Tetgen Libraries")
++
++include(FindPackageHandleStandardArgs)
++# handle the QUIETLY and REQUIRED arguments and set TETGEN_FOUND to TRUE if 
++# all listed variables are TRUE
++FIND_PACKAGE_HANDLE_STANDARD_ARGS(TETGEN DEFAULT_MSG TETGEN_LIBRARIES TETGEN_INCLUDE_DIR)
++
++add_definitions(-DTETLIBRARY)
++
++MARK_AS_ADVANCED(TETGEN_INCLUDE_DIR TETGEN_LIBRARIES TETGEN_LIBRARY)
++
+diff --git a/CMake/modules/fw-Qt5.cmake b/CMake/modules/fw-Qt5.cmake
+new file mode 100644
+index 0000000..01e5135
+--- /dev/null
++++ b/CMake/modules/fw-Qt5.cmake
+@@ -0,0 +1,3 @@
++add_definitions("-DQT_NO_KEYWORDS")
++#Fix error with BOOST_JOIN and qt moc
++set(CMAKE_AUTOMOC_MOC_OPTIONS "-DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION")
+diff --git a/CMake/modules/fw-boost.cmake b/CMake/modules/fw-boost.cmake
+new file mode 100644
+index 0000000..603f08e
+--- /dev/null
++++ b/CMake/modules/fw-boost.cmake
+@@ -0,0 +1,7 @@
++add_definitions(
++    -DBOOST_ALL_DYN_LINK
++    -DBOOST_THREAD_DONT_PROVIDE_DEPRECATED_FEATURES_SINCE_V3_0_0
++    -DBOOST_THREAD_PROVIDES_FUTURE
++    -DBOOST_THREAD_VERSION=2
++    -DBOOST_SPIRIT_USE_PHOENIX_V3
++)
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e0996e0..a33a778 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -28,7 +28,10 @@ set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER automoc)
+ 
+ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")  #racy backward compatibility
+ 
+-set(EXTERNAL_LIBRARIES CACHE PATH "External libraries location")
++option(USE_SYSTEM_LIB "Use system libraries to compile fw4spl" OFF)
++if(NOT USE_SYSTEM_LIB)
++    set(EXTERNAL_LIBRARIES CACHE PATH "External libraries location")
++endif()
+ set(CREATE_SUBPROJECTS OFF CACHE BOOL "Create a project for each subproject")
+ set(BUILD_TESTS ON CACHE BOOL "Configures projects associated tests (<project>Test projects)")
+ set(ADDITIONAL_PROJECTS CACHE PATH
+@@ -54,7 +57,7 @@ if(ADDITIONAL_PROJECTS)
+             add_subdirectory(${ADDITIONAL_PROJECT} ${DIR_NAME})
+         endif()
+     endforeach()
+-endif(ADDITIONAL_PROJECTS)
++endif()
+ 
+ # Set warning level and function export visibility on Unix
+ if(UNIX)
+@@ -165,7 +168,7 @@ macro(initProject PRJNAME )
+ 
+         list(APPEND ${FWPROJECT_NAME}_HEADERS ${HEADERS})
+         list(APPEND ${FWPROJECT_NAME}_SOURCES ${SOURCES})
+-    endforeach(SUBDIR)
++    endforeach()
+ 
+     set (${FWPROJECT_NAME}_INCLUDE_DIR ${${FWPROJECT_NAME}_INCLUDE_DIR} PARENT_SCOPE)
+     set (${FWPROJECT_NAME}_DIR     ${CMAKE_CURRENT_SOURCE_DIR}  PARENT_SCOPE)
+@@ -189,7 +192,7 @@ macro(initProject PRJNAME )
+     endif()
+ 
+     groupMaker(${FWPROJECT_NAME})
+-endmacro(initProject)
++endmacro()
+ 
+ 
+ macro(setVersion FWPROJECT_NAME PROJECT_VERSION)
+@@ -234,7 +237,7 @@ macro(configureProject FWPROJECT_NAME PROJECT_VERSION)
+     endif()
+     unset(SPYLOG_VALID_VALUE)
+ 
+-endmacro(configureProject)
++endmacro()
+ 
+ 
+ macro(createResourcesTarget TARGET RES_DIR TARGET_DIR)
+@@ -326,7 +329,7 @@ macro(fwExec FWPROJECT_NAME PROJECT_VERSION)
+ 
+     # Adds project into folder exec
+     set_target_properties(${FWPROJECT_NAME} PROPERTIES FOLDER "exec")
+-endmacro(fwExec)
++endmacro()
+ 
+ macro(fwCppunitTest FWPROJECT_NAME)
+     set(options)
+@@ -401,7 +404,7 @@ macro(fwCppunitTest FWPROJECT_NAME)
+             "${CMAKE_BINARY_DIR}/${FWPROJECT_NAME}/${FWPROJECT_NAME}.vcxproj.user"
+             IMMEDIATE @ONLY)
+     endif()
+-endmacro(fwCppunitTest)
++endmacro()
+ 
+ macro(fwLib FWPROJECT_NAME PROJECT_VERSION)
+     initProject( ${FWPROJECT_NAME} )
+@@ -453,7 +456,7 @@ macro(fwLib FWPROJECT_NAME PROJECT_VERSION)
+     
+     fwLibExtra()
+ 
+-endmacro(fwLib)
++endmacro()
+ 
+ macro(fwBundle FWPROJECT_NAME PROJECT_VERSION)
+     initProject( ${FWPROJECT_NAME} )
+@@ -542,7 +545,7 @@ macro(fwBundle FWPROJECT_NAME PROJECT_VERSION)
+         createResourcesInstallTarget( "${BUNDLE_DIR}" Bundles/${FWPROJECT_NAME}_${DASH_VERSION} )
+     endif()
+     fwBundleExtra()
+-endmacro(fwBundle)
++endmacro()
+ 
+ # Include the projects in parameter and their public dependencies and export them.
+ # Public dependencies of a project are those defined either with fwForwardInclude or fwUseForwardInclude.
+@@ -551,37 +554,37 @@ macro(fwUseForwardInclude)
+         get_target_property(PROJECT_INCLUDE_DIRECTORIES ${PROJECT} INTERFACE_INCLUDE_DIRECTORIES)
+         list(REMOVE_DUPLICATES PROJECT_INCLUDE_DIRECTORIES)
+         target_include_directories(${FWPROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRECTORIES})
+-    endforeach(PROJECT)
+-endmacro(fwUseForwardInclude)
++    endforeach()
++endmacro()
+ 
+ macro(fwUseForwardLink)
+     target_link_libraries(${FWPROJECT_NAME} PUBLIC ${ARGV})
+-endmacro(fwUseForwardLink)
++endmacro()
+ 
+ macro(fwUseForward)
+     fwUseForwardInclude(${ARGV})
+     fwUseForwardLink(${ARGV})
+-endmacro(fwUseForward)
++endmacro()
+ 
+ # Include the projects in parameter and export them.
+ # Compiling warnings will not be reported (because of SYSTEM).
+ macro(fwForwardInclude)
+     target_include_directories(${FWPROJECT_NAME} SYSTEM PUBLIC ${ARGV})
+-endmacro(fwForwardInclude)
++endmacro()
+ 
+ macro(fwForwardLink)
+     target_link_libraries(${FWPROJECT_NAME} PUBLIC ${ARGV})
+-endmacro(fwForwardLink)
++endmacro()
+ 
+ # Include the projects in parameter but do not export them.
+ # Compiling warnings will not be reported (because of SYSTEM).
+ macro(fwInclude)
+     target_include_directories(${FWPROJECT_NAME} SYSTEM PRIVATE ${ARGV})
+-endmacro(fwInclude)
++endmacro()
+ 
+ macro(fwLink)
+     target_link_libraries(${FWPROJECT_NAME} PRIVATE ${ARGV})
+-endmacro(fwLink)
++endmacro()
+ 
+ 
+ # Defines project's linked dependencies on others projects
+@@ -600,14 +603,14 @@ macro(fwUse)
+     foreach(PROJECT ${ARGV})
+         list(APPEND ${FWPROJECT_NAME}_DEPENDENCIES ${PROJECT})
+         list(APPEND ${FWPROJECT_NAME}_${${PROJECT}_TYPE}_DEPENDENCIES ${PROJECT})
+-    endforeach(PROJECT)
++    endforeach()
+ 
+     set(${FWPROJECT_NAME}_DEPENDENCIES ${${FWPROJECT_NAME}_DEPENDENCIES} PARENT_SCOPE)
+     set(${FWPROJECT_NAME}_EXECUTABLE_DEPENDENCIES ${${FWPROJECT_NAME}_EXECUTABLE_DEPENDENCIES} PARENT_SCOPE)
+     set(${FWPROJECT_NAME}_BUNDLE_DEPENDENCIES ${${FWPROJECT_NAME}_BUNDLE_DEPENDENCIES} PARENT_SCOPE)
+     set(${FWPROJECT_NAME}_LIBRARY_DEPENDENCIES ${${FWPROJECT_NAME}_LIBRARY_DEPENDENCIES} PARENT_SCOPE)
+ 
+-endmacro(fwUse)
++endmacro()
+ 
+ 
+ 
+@@ -626,14 +629,14 @@ macro(fwReq)
+     foreach(PROJECT ${ARGV})
+         list(APPEND ${FWPROJECT_NAME}_REQUIREMENTS ${PROJECT})
+         list(APPEND ${FWPROJECT_NAME}_${${PROJECT}_TYPE}_REQUIREMENTS ${PROJECT})
+-    endforeach(PROJECT)
++    endforeach()
+ 
+     set(${FWPROJECT_NAME}_REQUIREMENTS ${${FWPROJECT_NAME}_REQUIREMENTS} PARENT_SCOPE)
+     set(${FWPROJECT_NAME}_EXECUTABLE_REQUIREMENTS ${${FWPROJECT_NAME}_EXECUTABLE_REQUIREMENTS} PARENT_SCOPE)
+     set(${FWPROJECT_NAME}_BUNDLE_REQUIREMENTS ${${FWPROJECT_NAME}_BUNDLE_REQUIREMENTS} PARENT_SCOPE)
+     set(${FWPROJECT_NAME}_LIBRARY_REQUIREMENTS ${${FWPROJECT_NAME}_LIBRARY_REQUIREMENTS} PARENT_SCOPE)
+ 
+-endmacro(fwReq)
++endmacro()
+ 
+ 
+ function(checkMissingDependencies DIR KEYWORD RESULT)
+@@ -651,10 +654,10 @@ function(checkMissingDependencies DIR KEYWORD RESULT)
+     foreach(DEPENDENCY ${DEPENDENCIES})
+         if(NOT ${DEPENDENCY}_TYPE)
+             list(APPEND DEPENDENCY_LIST ${DEPENDENCY})
+-        endif(NOT ${DEPENDENCY}_TYPE)
+-    endforeach(DEPENDENCY)
++        endif()
++    endforeach()
+     set(${RESULT} ${DEPENDENCY_LIST} PARENT_SCOPE)
+-endfunction(checkMissingDependencies)
++endfunction()
+ 
+ 
+ function(findAllDependencies FWPROJECT_NAMES RESULT_VAR)
+@@ -777,8 +780,17 @@ if(EXTERNAL_LIBRARIES)
+     foreach(LIB_CONFIG ${LIB_CONFIGS})
+         message(STATUS "include : ${LIB_CONFIG}")
+         include("${LIB_CONFIG}")
+-    endforeach(LIB_CONFIG)
+-endif(EXTERNAL_LIBRARIES)
++    endforeach()
++elseif(USE_SYSTEM_LIB)
++    list(APPEND CMAKE_PREFIX_PATH ${FWCMAKE_RESOURCE_PATH}/modules)
++    list(APPEND CMAKE_MODULE_PATH ${FWCMAKE_RESOURCE_PATH}/modules)
++    list(APPEND CMAKE_FIND_ROOT_PATH ${FWCMAKE_RESOURCE_PATH}/modules)
++    file(GLOB LIB_CONFIGS ${FWCMAKE_RESOURCE_PATH}/modules/fw-*.cmake )
++    foreach(LIB_CONFIG ${LIB_CONFIGS})
++        message(STATUS "include : ${LIB_CONFIG}")
++        include("${LIB_CONFIG}")
++    endforeach()
++endif()
+ 
+ 
+ set(PROJECTS_TO_BUILD CACHE STRING
+@@ -802,7 +814,7 @@ if(ADDITIONAL_PROJECTS)
+         list(APPEND PROJECTS_PROPERTIES ${ADDITIONAL_PROJECTS_PROPERTIES})
+         set(ADDITIONAL_PROJECTS_SOURCE_DIR "${ADDITIONAL_PROJECTS_SOURCE_DIR} ${ADDITIONAL_PROJECT}")
+     endforeach()
+-endif(ADDITIONAL_PROJECTS)
++endif()
+ 
+ foreach(PROPERTIES_FILE ${PROJECTS_PROPERTIES})
+     get_filename_component(PROJECT_DIR ${PROPERTIES_FILE} PATH)
+@@ -884,7 +896,7 @@ if(PROJECTS_TO_INSTALL)
+     unset(PROJECT_FOUND)
+ endif()
+ 
+-if(EXTERNAL_LIBRARIES)
++if(EXTERNAL_LIBRARIES OR USE_SYSTEM_LIB)
+     set(APP_TO_BUILD)
+     foreach(PROJECT ${PROJECT_LIST})
+         addProject(${PROJECT})
+@@ -898,7 +910,6 @@ if(EXTERNAL_LIBRARIES)
+             endif()
+         endif()
+     endforeach()
+-
+ else()
+     message("EXTERNAL_LIBRARIES variable is missing. Please, specify external libraries location to genereate CMake projects.")
+ endif()
+diff --git a/SrcLib/core/fwAtomsPatch/src/fwAtomsPatch/VersionsGraph.cpp b/SrcLib/core/fwAtomsPatch/src/fwAtomsPatch/VersionsGraph.cpp
+index 27f9a47..52d9190 100644
+--- a/SrcLib/core/fwAtomsPatch/src/fwAtomsPatch/VersionsGraph.cpp
++++ b/SrcLib/core/fwAtomsPatch/src/fwAtomsPatch/VersionsGraph.cpp
+@@ -1,9 +1,16 @@
+ /* ***** BEGIN LICENSE BLOCK *****
+- * FW4SPL - Copyright (C) IRCAD, 2009-2015.
++ * FW4SPL - Copyright (C) IRCAD, 2009-2016.
+  * Distributed under the terms of the GNU Lesser General Public License (LGPL) as
+  * published by the Free Software Foundation.
+  * ****** END LICENSE BLOCK ****** */
+ 
++#ifndef WIN32
++// To fix problem in class boost::detail::stored_edge_property
++// Default constructor is a move constructor and no copy constructor is implemented
++// The instance of the class can not be copied.
++#define BOOST_NO_CXX11_RVALUE_REFERENCES
++#define BOOST_NO_CXX11_REF_QUALIFIERS
++#endif
+ #include <algorithm>
+ #include <boost/graph/graph_traits.hpp>
+ #include <boost/graph/adjacency_list.hpp>
+@@ -218,7 +225,7 @@ VersionsGraph::EdgeIDType VersionsGraph::createEdge(const EdgeType& edge)
+     EdgeIDType newEdge;
+     bool success = false;
+     ::fwCore::mt::ReadLock lock(m_graphMutex);
+-    ::boost::tie(newEdge, success) = ::boost::add_edge(origin,target,edge,m_graph);
++    ::boost::tie(newEdge, success) = ::boost::add_edge(origin, target, edge, m_graph);
+ 
+     OSLM_ASSERT("Unable to create the edge between '" << edge.getOriginVersion() << "' "
+                 "and '" << edge.getTargetVersion() << "'", success);
+diff --git a/SrcLib/visu/fwRenderVTK/src/fwRenderVTK/vtk/Instantiator.cpp b/SrcLib/visu/fwRenderVTK/src/fwRenderVTK/vtk/Instantiator.cpp
+index bdf3878..1c70890 100644
+--- a/SrcLib/visu/fwRenderVTK/src/fwRenderVTK/vtk/Instantiator.cpp
++++ b/SrcLib/visu/fwRenderVTK/src/fwRenderVTK/vtk/Instantiator.cpp
+@@ -1,5 +1,5 @@
+ /* ***** BEGIN LICENSE BLOCK *****
+- * FW4SPL - Copyright (C) IRCAD, 2009-2015.
++ * FW4SPL - Copyright (C) IRCAD, 2009-2016.
+  * Distributed under the terms of the GNU Lesser General Public License (LGPL) as
+  * published by the Free Software Foundation.
+  * ****** END LICENSE BLOCK ****** */
+@@ -9,12 +9,14 @@
+ #include "fwRenderVTK/vtk/fwVtkCellPicker.hpp"
+ #include "fwRenderVTK/vtk/InteractorStyle2DForNegato.hpp"
+ #include "fwRenderVTK/vtk/InteractorStyle3DForNegato.hpp"
++#include "fwRenderVTK/vtk/Instantiator.hpp"
+ 
+ #include <fwCore/base.hpp>
+-#include <vtkInstantiator.h>
+ 
+-#include "fwRenderVTK/vtk/Instantiator.hpp"
++#include <vtkInstantiator.h>
++#include <vtkVersion.h>
+ 
++#if VTK_MAJOR_VERSION >= 6 && VTK_MINOR_VERSION > 1
+ #ifndef ANDROID
+ vtkInstantiatorNewMacro(fwVtkBoxRepresentation);
+ #endif
+@@ -22,6 +24,15 @@ vtkInstantiatorNewMacro(fwVtkPicker);
+ vtkInstantiatorNewMacro(fwVtkCellPicker);
+ vtkInstantiatorNewMacro(InteractorStyle2DForNegato);
+ vtkInstantiatorNewMacro(InteractorStyle3DForNegato);
++#else
++#ifndef ANDROID
++extern vtkObject* vtkInstantiatorfwVtkBoxRepresentationNew();
++#endif
++extern vtkObject* vtkInstantiatorfwVtkPickerNew();
++extern vtkObject* vtkInstantiatorfwVtkCellPickerNew();
++extern vtkObject* vtkInstantiatorInteractorStyle2DForNegatoNew();
++extern vtkObject* vtkInstantiatorInteractorStyle3DForNegatoNew();
++#endif
+ 
+ namespace fwRenderVTK
+ {
