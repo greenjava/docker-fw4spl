@@ -52,7 +52,7 @@ WORKDIR $FW4SPL_HOME/Build
 
 # Configure project
 RUN cmake $FW4SPL_HOME/Src/fw4spl \
-          -G Ninja
+          -G Ninja \
           -DCMAKE_INSTALL_PREFIX=$FW4SPL_HOME/Install \
           -DCMAKE_BUILD_TYPE=$FW4SPL_BUILDTYPE \
           -DBUILD_TESTS=OFF \
