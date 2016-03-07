@@ -18,6 +18,7 @@ RUN apt-get install -y cmake \
                        qttools5-dev \
                        qttools5-dev-tools \
                        libvtk6-dev \
+                       libvtk6-qt-dev \
                        libgdcm2-dev \
                        libvtkgdcm2-dev \
                        libinsighttoolkit4-dev \
