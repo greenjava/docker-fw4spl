@@ -4,28 +4,28 @@ FROM debian:sid
 RUN apt-get update && apt-get upgrade -y
 
 # Install build dependencies
-RUN apt-get install -y cmake \
-                       checkinstall \
-                       curl \
-                       make \
-                       ninja-build \
-                       gcc \
-                       clang \
-                       mercurial \
-                       git \
-                       libcppunit-dev \
-                       libglm-dev \
-                       libboost-all-dev \
-                       qtbase5-dev \
-                       qttools5-dev \
-                       qttools5-dev-tools \
-                       libvtk6-dev \
-                       libvtk6-qt-dev \
-                       libgdcm2-dev \
-                       libvtkgdcm2-dev \
-                       libinsighttoolkit4-dev \
-                       libvxl1-dev \
-                       && apt-get clean
+RUN apt-get update && apt-get install -y cmake \
+                                         checkinstall \
+                                         curl \
+                                         make \
+                                         ninja-build \
+                                         gcc \
+                                         clang \
+                                         mercurial \
+                                         git \
+                                         libcppunit-dev \
+                                         libglm-dev \
+                                         libboost-all-dev \
+                                         qtbase5-dev \
+                                         qttools5-dev \
+                                         qttools5-dev-tools \
+                                         libvtk6-dev \
+                                         libvtk6-qt-dev \
+                                         libgdcm2-dev \
+                                         libvtkgdcm2-dev \
+                                         libinsighttoolkit4-dev \
+                                         libvxl1-dev \
+                                         && apt-get clean
 
 # Install camp
 RUN curl -sSL https://github.com/fw4spl-org/camp/archive/0.7.1.4.tar.gz | tar -xzC /tmp \
