@@ -11,6 +11,7 @@ RUN apt-get install -y cmake \
                        ninja-build \
                        gcc \
                        clang \
+                       mercurial \
                        git \
                        libcppunit-dev \
                        libglm-dev \
@@ -34,19 +35,23 @@ RUN curl -sSL https://github.com/fw4spl-org/camp/archive/0.7.1.4.tar.gz | tar -x
               && make \
               && checkinstall -Dy --nodoc --pkgname=camp --pkgversion=0.7.1.4
 
-ENV FW4SPL_HOME=/home/fw4spl/
+ENV FW4SPL_HOME=/home/Dev/
 ENV FW4SPL_VERSION=0.11.0
 ENV FW4SPL_BUILDTYPE=Release
 
 # Create workspace
 RUN bash -c "mkdir -p $FW4SPL_HOME/{Build,Src,Install}"
 
+# Enabled mq extension
+RUN echo 'mq=' >> ~/.hgrc
 # Clone fw4spl
-RUN cd $FW4SPL_HOME/Src && git clone --depth=1 -b fw4spl_$FW4SPL_VERSION https://github.com/fw4spl-org/fw4spl.git
-
-# Patch fw4spl
-COPY system_lib.patch /tmp/system_lib.patch
-RUN cd $FW4SPL_HOME/Src/fw4spl && git apply /tmp/system_lib.patch
+RUN cd $FW4SPL_HOME/Src && hg qclone https://bitbucket.org/fw4splorg/fw4spl-patches fw4spl && cd $FW4SPL_HOME/Src/fw4spl
+# Added default username for patches without authors
+RUN echo 'username = docker' >> $FW4SPL_HOME/Src/fw4spl/.hg/hgrc
+# Updated fw4spl and patches repositories with specified branch
+RUN hg update fw4spl_$FW4SPL_VERSION && hg update --mq fw4spl_$FW4SPL_VERSION
+# Apply all patches
+RUN hg qpush -a
 
 WORKDIR $FW4SPL_HOME/Build
 
@@ -59,6 +64,6 @@ RUN cmake $FW4SPL_HOME/Src/fw4spl \
           -DUSE_SYSTEM_LIB=ON \
           -DBUILD_DOCUMENTATION=OFF
 
-RUN ninja VRRender
+RUN ninja all
 
 CMD ["/bin/bash"]
