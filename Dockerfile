@@ -42,12 +42,11 @@ ENV FW4SPL_BUILDTYPE=Release
 # Create workspace
 RUN bash -c "mkdir -p $FW4SPL_HOME/{Build,Src,Install}"
 
-# Enabled mq extension
-RUN echo 'mq=' >> ~/.hgrc
+# Enabled mq extension and added default username for patches without authors
+RUN echo $'[ui]\nusername = docker\n[extensions]\nmq = ' >> ~/.hgrc
+
 # Clone fw4spl
 RUN cd $FW4SPL_HOME/Src && hg qclone https://bitbucket.org/fw4splorg/fw4spl-patches fw4spl && cd $FW4SPL_HOME/Src/fw4spl
-# Added default username for patches without authors
-RUN echo 'username = docker' >> $FW4SPL_HOME/Src/fw4spl/.hg/hgrc
 # Updated fw4spl and patches repositories with specified branch
 RUN hg update fw4spl_$FW4SPL_VERSION && hg update --mq fw4spl_$FW4SPL_VERSION
 # Apply all patches
