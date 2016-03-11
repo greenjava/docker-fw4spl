@@ -39,21 +39,21 @@ export FW4SPL_VERSION=Release
 
 - You can specify fw4spl version with **FW4SPL_VERSION** environment variable
 ```
-export FW4SPL_VERSION=0.10.0
+export FW4SPL_VERSION=0.11.0
 ```
 
 ### 2.2 Build
 
 Command to build the fw4spl container:
 ```
-docker build -t fw4spl:0.10.0-dev .
+docker build -t fw4spl:0.11.0 .
 ```
 
 ### 2.2 Run
 
 Command to run the fw4spl image:
 ```
-docker run -idt --name=myFW4SPL fw4spl:0.10.0-dev
+docker run -idt --name=myFW4SPL fw4spl:0.11.0
 ```
 
 ### 2.3 Use
