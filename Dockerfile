@@ -46,11 +46,11 @@ RUN bash -c "mkdir -p $FW4SPL_HOME/{Build,Src,Install}"
 RUN echo '[ui]\nusername = docker\n[extensions]\nmq = ' > ~/.hgrc
 
 # Clone fw4spl
-RUN cd $FW4SPL_HOME/Src && hg qclone https://bitbucket.org/fw4splorg/fw4spl-patches fw4spl && cd $FW4SPL_HOME/Src/fw4spl
+RUN cd $FW4SPL_HOME/Src && hg qclone https://bitbucket.org/fw4splorg/fw4spl-patches fw4spl
 # Updated fw4spl and patches repositories with specified branch
-RUN hg update fw4spl_$FW4SPL_VERSION && hg update --mq fw4spl_$FW4SPL_VERSION
+RUN cd $FW4SPL_HOME/Src/fw4spl && hg update fw4spl_$FW4SPL_VERSION && hg update --mq fw4spl_$FW4SPL_VERSION
 # Apply all patches
-RUN hg qpush -a
+RUN cd $FW4SPL_HOME/Src/fw4spl && hg qpush -a
 
 WORKDIR $FW4SPL_HOME/Build
 
