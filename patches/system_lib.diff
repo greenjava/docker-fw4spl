@@ -1,0 +1,55 @@
+diff --git a/Bundles/LeafUI/uiGenericQt/CMakeLists.txt b/Bundles/LeafUI/uiGenericQt/CMakeLists.txt
+index e7b839fab..4c5eb00d7 100644
+--- a/Bundles/LeafUI/uiGenericQt/CMakeLists.txt
++++ b/Bundles/LeafUI/uiGenericQt/CMakeLists.txt
+@@ -16,6 +16,7 @@ fwLink(
+     ${Qt5Widgets_LIBRARIES}
+ )
+ 
+-set_target_properties(${FWPROJECT_NAME} PROPERTIES AUTOMOC TRUE)
++set_target_properties(${FWPROJECT_NAME} PROPERTIES AUTOMOC TRUE) 
++target_compile_definitions(${FWPROJECT_NAME} PUBLIC "-DQT_NO_KEYWORDS")
+ 
+ 
+diff --git a/Bundles/LeafUI/uiPreferences/CMakeLists.txt b/Bundles/LeafUI/uiPreferences/CMakeLists.txt
+index c0bc9e3b9..88f7ff1fd 100644
+--- a/Bundles/LeafUI/uiPreferences/CMakeLists.txt
++++ b/Bundles/LeafUI/uiPreferences/CMakeLists.txt
+@@ -14,3 +14,4 @@ fwLink(
+ )
+ 
+ set_target_properties(${FWPROJECT_NAME} PROPERTIES AUTOMOC TRUE)
++target_compile_definitions(${FWPROJECT_NAME} PUBLIC "-DQT_NO_KEYWORDS")
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f24c4c6e7..3ab941670 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,8 +11,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/build/profile_config.cmake)
+ include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/build/plugin_config.cmake)
+ include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/install/generic_install.cmake)
+ include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/install/helper.cmake)
+-include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/modules/PrecompiledHeader.cmake)
+ 
++set(ENABLE_PCH ON CACHE BOOL "Use pre-compiled headers to speedup the compilation")
++include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/modules/PrecompiledHeader.cmake)
+ 
+ if(MSVC)
+     if(NOT DEFINED CMAKE_PCH_COMPILER_TARGETS)
+@@ -59,7 +60,7 @@ else()
+     endif()
+ endif()
+ 
+-set(ENABLE_PCH ON CACHE BOOL "Use pre-compiled headers to speedup the compilation")
++set(FWCMAKE_RESOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/)
+ 
+ # Append our 'FindPackages.cmake' to CMAKE_MODULE_PATH
+ if(EXTERNAL_LIBRARIES)
+@@ -146,8 +147,6 @@ endif()
+ 
+ set(LIBRARY_OUTPUT_DIR lib)
+ 
+-set(FWCMAKE_RESOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/)
+-
+ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+     #http://stackoverflow.com/questions/6802903/c-ifdef-mac-os-x-question
+     add_definitions(-D__MACOSX__) #racy backward compatibility
